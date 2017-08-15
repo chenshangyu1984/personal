@@ -142,47 +142,44 @@ public class GameUtils {
     }
 
     public static boolean determineWinner(Player player, int size) {
-        for (Integer index : player.getBoxes()) {
-            // horizontally
-            if (index % size > (size - Board.WINNER_LEN)) {
-                continue;
-            }
-            if (checkWinner(player.getBoxes(), index, 1)) {
-                return true;
-            }
+        // horizontally
+        boolean win = player.getBoxes().stream().filter(
+                box -> box % size <= size - Board.WINNER_LEN
+        ).anyMatch(
+                box -> checkWinner(player.getBoxes(), box, 1)
+        );
+        if (win) {
+            return true;
         }
 
-        for (Integer index : player.getBoxes()) {
-            // vertically
-            if (index + (Board.WINNER_LEN - 1) * size >
-                    (size * size - 1)) {
-                continue;
-            }
-            if (checkWinner(player.getBoxes(), index, size)) {
-                return true;
-            }
+        // vertically
+        win = player.getBoxes().stream().filter(
+                box -> box + (Board.WINNER_LEN - 1) * size <= (size * size - 1)
+        ).anyMatch(
+                box -> checkWinner(player.getBoxes(), box, size)
+        );
+        if (win) {
+            return true;
         }
 
-        for (Integer index : player.getBoxes()) {
-            // diagonally (size + 1)
-            if (index + (Board.WINNER_LEN - 1) * (size + 1) >
-                    (size * size - 1)) {
-                continue;
-            }
-            if (checkWinner(player.getBoxes(), index, size + 1)) {
-                return true;
-            }
+        // diagonally (size + 1)
+        win = player.getBoxes().stream().filter(
+                box -> box + (Board.WINNER_LEN - 1) * (size + 1) <= (size * size - 1)
+        ).anyMatch(
+                box -> checkWinner(player.getBoxes(), box, size + 1)
+        );
+        if (win) {
+            return true;
         }
 
-        for (Integer index : player.getBoxes()) {
-            // diagonally (size - 1)
-            if (index + (Board.WINNER_LEN - 1) * (size - 1) >
-                    (size * size - 1)) {
-                continue;
-            }
-            if (checkWinner(player.getBoxes(), index, size - 1)) {
-                return true;
-            }
+        // diagonally (size - 1)
+        win = player.getBoxes().stream().filter(
+                box -> box + (Board.WINNER_LEN - 1) * (size - 1) <= (size * size - 1)
+        ).anyMatch(
+                box -> checkWinner(player.getBoxes(), box, size - 1)
+        );
+        if (win) {
+            return true;
         }
 
         return false;
