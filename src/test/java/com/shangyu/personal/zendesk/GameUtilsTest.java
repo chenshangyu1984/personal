@@ -1,4 +1,4 @@
-package com.shangyu.personal;
+package com.shangyu.personal.zendesk;
 
 import com.shangyu.personal.zendesk.GameUtils;
 import com.shangyu.personal.zendesk.Player;
