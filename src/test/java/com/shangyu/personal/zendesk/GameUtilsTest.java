@@ -1,7 +1,5 @@
 package com.shangyu.personal.zendesk;
 
-import com.shangyu.personal.zendesk.GameUtils;
-import com.shangyu.personal.zendesk.Player;
 import org.junit.Assert;
 import org.junit.Test;
 
