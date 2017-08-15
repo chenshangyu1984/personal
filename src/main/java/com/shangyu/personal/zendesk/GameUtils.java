@@ -185,8 +185,7 @@ public class GameUtils {
         return false;
     }
 
-    private static boolean checkWinner(Set<Integer> boxes,
-                                       int index, int interval) {
+    private static boolean checkWinner(Set<Integer> boxes, int index, int interval) {
         for (int i = 1 ; i < Board.WINNER_LEN; i++) {
             if (!boxes.contains(index + interval * i)) {
                 return false;
