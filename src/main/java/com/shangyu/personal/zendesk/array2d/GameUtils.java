@@ -3,7 +3,6 @@ package com.shangyu.personal.zendesk.array2d;
 import org.springframework.util.StringUtils;
 
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * Created by shangyu on 16/8/17.
@@ -141,69 +140,75 @@ public class GameUtils {
         int secondIndex = index % board.getSize();
 
         // horizontally
-        // from index to left (secondIndex - 1)
-        if (secondIndex - 2 >= 0 && marker.equals(board.getBox(firstIndex, secondIndex - 1))
-                && marker.equals(board.getBox(firstIndex, secondIndex - 2))) {
+        // from current to left (secondIndex decreased by 1)
+        if (toLeftOrTop(secondIndex) &&
+                checkWinner(board, marker, firstIndex, 0, secondIndex, -1)) {
             return true;
         }
-        // from index to right (secondIndex + 1)
-        if (secondIndex + 2 < board.getSize()
-                && marker.equals(board.getBox(firstIndex, secondIndex + 1))
-                && marker.equals(board.getBox(firstIndex, secondIndex + 2))) {
+        // from current to right (secondIndex increased by 1)
+        if (toRightOrBottom(board.getSize(), secondIndex) &&
+                checkWinner(board, marker, firstIndex, 0, secondIndex, 1)) {
             return true;
         }
 
         // vertically
-        // from index to bottom (firstIndex + 1)
-        if (firstIndex + 2 < board.getSize()
-                && marker.equals(board.getBox(firstIndex + 1, secondIndex))
-                && marker.equals(board.getBox(firstIndex + 2, secondIndex))) {
+        // from current to bottom (firstIndex increased by 1)
+        if (toRightOrBottom(board.getSize(), firstIndex) &&
+                checkWinner(board, marker, firstIndex, 1, secondIndex, 0)) {
             return true;
         }
-        // from index to top (firstIndex - 1)
-        if (firstIndex - 2 >= 0
-                && marker.equals(board.getBox(firstIndex - 1, secondIndex))
-                && marker.equals(board.getBox(firstIndex - 2, secondIndex))) {
+        // from current to top (firstIndex decreased by 1)
+        if (toLeftOrTop(firstIndex) &&
+                checkWinner(board, marker, firstIndex, -1, secondIndex, 0)) {
             return true;
         }
 
         // diagonally
-        // from index to left bottom (first index + 1, second index - 1)
-        if (firstIndex + 2 < board.getSize() && secondIndex - 2 >= 0
-                && marker.equals(board.getBox(firstIndex + 1, secondIndex - 1))
-                && marker.equals(board.getBox(firstIndex + 2, secondIndex - 2))) {
+        // from current to left bottom (firstIndex increased by 1, secondIndex decreased by 1)
+        if (toRightOrBottom(board.getSize(), firstIndex) &&
+                toLeftOrTop(secondIndex) &&
+                checkWinner(board, marker, firstIndex, 1, secondIndex, -1)) {
             return true;
         }
-        // from index to left top (first index - 1, second index - 1)
-        if (firstIndex - 2 >= 0 && secondIndex - 2 >= 0
-                && marker.equals(board.getBox(firstIndex - 1, secondIndex - 1))
-                && marker.equals(board.getBox(firstIndex - 2, secondIndex - 2))) {
+        // from current to left top (firstIndex decreased by 1, secondIndex decreased by 1)
+        if (toLeftOrTop(firstIndex) &&
+                toLeftOrTop(secondIndex) &&
+                checkWinner(board, marker, firstIndex, -1, secondIndex, -1)) {
             return true;
         }
-        // from index to right bottom (first index + 1, second index + 1)
-        if (firstIndex + 2 < board.getSize() && secondIndex + 2 < board.getSize()
-                && marker.equals(board.getBox(firstIndex + 1, secondIndex + 1))
-                && marker.equals(board.getBox(firstIndex + 2, secondIndex + 2))) {
+        // from current to right bottom (firstIndex increased by 1, secondIndex increased by 1)
+        if (toRightOrBottom(board.getSize(), firstIndex) &&
+                toRightOrBottom(board.getSize(), secondIndex)  &&
+                checkWinner(board, marker, firstIndex, 1, secondIndex, 1)) {
             return true;
         }
-        // from index to right top (first index - 1, second index + 1)
-        if (firstIndex - 2 >= 0 && secondIndex + 2 < board.getSize()
-                && marker.equals(board.getBox(firstIndex - 1, secondIndex + 1))
-                && marker.equals(board.getBox(firstIndex - 2, secondIndex + 2))) {
+        // from current to right top (firstIndex decreased by 1, secondIndex increased by 1)
+        if (toLeftOrTop(firstIndex)&&
+                toRightOrBottom(board.getSize(), secondIndex) &&
+                checkWinner(board, marker, firstIndex, -1, secondIndex, 1)) {
             return true;
         }
 
         return false;
     }
 
-    private static boolean checkWinner(Set<Integer> boxes, int index, int interval) {
+    private static boolean checkWinner(Board board, String marker, int firstIndex, int firstInterval, int 
+            secondIndex, int secondInterval) {
         for (int i = 1 ; i < Board.WINNER_LEN; i++) {
-            if (!boxes.contains(index + interval * i)) {
+            if (!marker.equals(board.getBox(firstIndex + firstInterval * i, secondIndex + secondInterval * i))) {
                 return false;
             }
         }
-
+        
         return true;
+    }
+
+    private static boolean toRightOrBottom(int size, int index) {
+        return size - index >= Board.WINNER_LEN;
+    }
+
+    private static boolean toLeftOrTop(int index) {
+        return index + 1 >= Board.WINNER_LEN;
     }
 
     private static String padding(String text) {
