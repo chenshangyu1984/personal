@@ -141,10 +141,12 @@ public class GameUtils {
         }
     }
 
+    // check all the elements in the set, we only check the smaller elements
     public static boolean determineWinner(Player player, int size) {
-        // horizontally
+        // horizontally (from left to right only, so increased by 1)
         boolean win = player.getBoxes().stream().filter(
-                box -> box % size <= size - Board.WINNER_LEN
+                // at least WINNER_LEN number of elements (including itself) to the right of the row
+                box -> box % size + Board.WINNER_LEN <= size
         ).anyMatch(
                 box -> checkWinner(player.getBoxes(), box, 1)
         );
@@ -152,9 +154,10 @@ public class GameUtils {
             return true;
         }
 
-        // vertically
+        // vertically (from top to bottom only, so increased by size)
         win = player.getBoxes().stream().filter(
-                box -> box + (Board.WINNER_LEN - 1) * size <= (size * size - 1)
+                // at least WINNER_LEN number of elements (including itself) to the bottom of the column
+                box -> box / size + Board.WINNER_LEN <= size
         ).anyMatch(
                 box -> checkWinner(player.getBoxes(), box, size)
         );
@@ -162,19 +165,25 @@ public class GameUtils {
             return true;
         }
 
-        // diagonally (size + 1)
+        // diagonally (from top to bottom only)
+        // from left to right, so increased by size + 1
         win = player.getBoxes().stream().filter(
-                box -> box + (Board.WINNER_LEN - 1) * (size + 1) <= (size * size - 1)
+                // at least WINNER_LEN number of elements (including itself) to the right of the row
+                // at least WINNER_LEN number of elements (including itself) to the bottom of the column
+                box -> box % size + Board.WINNER_LEN <= size &&
+                        box / size + Board.WINNER_LEN <= size
         ).anyMatch(
                 box -> checkWinner(player.getBoxes(), box, size + 1)
         );
         if (win) {
             return true;
         }
-
-        // diagonally (size - 1)
+        // from right to left, so increased by size - 1
         win = player.getBoxes().stream().filter(
-                box -> box + (Board.WINNER_LEN - 1) * (size - 1) <= (size * size - 1)
+                // at least WINNER_LEN number of elements (including itself) to the left of the row
+                // at least WINNER_LEN number of elements (including itself) to the bottom of the column
+                box -> box % size + 1 >= Board.WINNER_LEN &&
+                        box / size + Board.WINNER_LEN <= size
         ).anyMatch(
                 box -> checkWinner(player.getBoxes(), box, size - 1)
         );
