@@ -1,4 +1,4 @@
-package com.shangyu.personal.zendesk;
+package com.shangyu.personal.zendesk.uniqueSet;
 
 /**
  * Created by shangyu on 15/8/17.
@@ -19,6 +19,6 @@ public class Board {
     }
 
     public boolean isValidIndex(int index) {
-        return index >= 1 && index <= size * size;
+        return index >= 0 && index < size * size;
     }
 }

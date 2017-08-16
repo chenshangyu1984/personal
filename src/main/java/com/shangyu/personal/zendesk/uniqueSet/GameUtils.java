@@ -1,4 +1,4 @@
-package com.shangyu.personal.zendesk;
+package com.shangyu.personal.zendesk.uniqueSet;
 
 import org.springframework.util.StringUtils;
 
@@ -55,7 +55,7 @@ public class GameUtils {
 
             try {
                 String line = scanner.nextLine();
-                boxIndex = Integer.parseInt(line);
+                boxIndex = Integer.parseInt(line) - 1;
             } catch (Exception e) {
                 continue;
             }
@@ -66,8 +66,7 @@ public class GameUtils {
             }
 
             // check index has been placed
-            if (player1.getBoxes().contains(boxIndex - 1) ||
-                    player2.getBoxes().contains(boxIndex - 1)) {
+            if (player1.getBoxes().contains(boxIndex) || player2.getBoxes().contains(boxIndex)) {
                 continue;
             }
 
@@ -114,18 +113,17 @@ public class GameUtils {
     public static void playGame(Scanner scanner, Board board, Player player1, Player player2) {
         Player player = player1;
         while (true) {
-            // get valid index
-            int boxIndex = inputBoxIndex(scanner, player,
-                    board, player1, player2);
+            // get valid index (already minus 1)
+            int boxIndex = inputBoxIndex(scanner, player, board, player1, player2);
 
             // add to player's boxes
-            player.getBoxes().add(boxIndex - 1);
+            player.getBoxes().add(boxIndex);
 
             // print game
             printGame(board, player1, player2);
 
             // determine winner if any
-            boolean win = determineWinner(player, board.getSize());
+            boolean win = determineWinner(player, board.getSize(), boxIndex);
             if (win) {
                 System.out.println("Congratulations " + player.getName() + "! You have won.");
                 return;
@@ -141,57 +139,69 @@ public class GameUtils {
         }
     }
 
-    // check all the elements in the set, we only check the smaller elements
-    public static boolean determineWinner(Player player, int size) {
-        // horizontally (from left to right only, so increased by 1)
-        boolean win = player.getBoxes().stream().filter(
-                // at least WINNER_LEN number of elements (including itself) to the right of the row
-                box -> box % size + Board.WINNER_LEN <= size
-        ).anyMatch(
-                box -> checkWinner(player.getBoxes(), box, 1)
-        );
-        if (win) {
+    public static boolean determineWinner(Player player, int size, int index) {
+        int rowIndex = index / size;
+        int columnIndex = index % size;
+
+        // horizontally
+        // from index to right, index increased by 1
+        if (toColumnRightOrRowBottom(size, columnIndex) &&
+                checkWinner(player.getBoxes(), index, 1)) {
+            return true;
+        }
+        // from index to left, index decreased by 1
+        if (toColumnLeftOrRowTop(columnIndex) &&
+                checkWinner(player.getBoxes(), index, -1)) {
             return true;
         }
 
-        // vertically (from top to bottom only, so increased by size)
-        win = player.getBoxes().stream().filter(
-                // at least WINNER_LEN number of elements (including itself) to the bottom of the column
-                box -> box / size + Board.WINNER_LEN <= size
-        ).anyMatch(
-                box -> checkWinner(player.getBoxes(), box, size)
-        );
-        if (win) {
+        // vertically
+        // from index to bottom, index increased by size
+        if (toColumnRightOrRowBottom(size, rowIndex) &&
+                checkWinner(player.getBoxes(), index, size)) {
+            return true;
+        }
+        // from index to top, index decreased by size
+        if (toColumnLeftOrRowTop(rowIndex) &&
+                checkWinner(player.getBoxes(), index, -size)) {
             return true;
         }
 
-        // diagonally (from top to bottom only)
-        // from left to right, so increased by size + 1
-        win = player.getBoxes().stream().filter(
-                // at least WINNER_LEN number of elements (including itself) to the right of the row
-                // at least WINNER_LEN number of elements (including itself) to the bottom of the column
-                box -> box % size + Board.WINNER_LEN <= size &&
-                        box / size + Board.WINNER_LEN <= size
-        ).anyMatch(
-                box -> checkWinner(player.getBoxes(), box, size + 1)
-        );
-        if (win) {
+        // diagonally
+        // from index to right bottom, so increased by size + 1
+        if (toColumnRightOrRowBottom(size, rowIndex) &&
+                toColumnRightOrRowBottom(size, columnIndex) &&
+                checkWinner(player.getBoxes(), index, size + 1)) {
             return true;
         }
-        // from right to left, so increased by size - 1
-        win = player.getBoxes().stream().filter(
-                // at least WINNER_LEN number of elements (including itself) to the left of the row
-                // at least WINNER_LEN number of elements (including itself) to the bottom of the column
-                box -> box % size + 1 >= Board.WINNER_LEN &&
-                        box / size + Board.WINNER_LEN <= size
-        ).anyMatch(
-                box -> checkWinner(player.getBoxes(), box, size - 1)
-        );
-        if (win) {
+        // from index to left top, so decreased by size + 1
+        if (toColumnLeftOrRowTop(rowIndex) &&
+                toColumnLeftOrRowTop(columnIndex) &&
+                checkWinner(player.getBoxes(), index, -size - 1)) {
+            return true;
+        }
+        // from index to left bottom, so increased by size - 1
+        if (toColumnRightOrRowBottom(size, rowIndex) &&
+                toColumnLeftOrRowTop(columnIndex) &&
+                checkWinner(player.getBoxes(), index, size - 1)) {
+            return true;
+        }
+        // from index to right top, so decreased by size - 1
+        if (toColumnLeftOrRowTop(rowIndex) &&
+                toColumnRightOrRowBottom(size, columnIndex) &&
+                checkWinner(player.getBoxes(), index, -size + 1)) {
             return true;
         }
 
         return false;
+    }
+
+    private static boolean toColumnRightOrRowBottom(int size, int index) {
+        return size - index >= Board.WINNER_LEN;
+    }
+
+    private static boolean toColumnLeftOrRowTop(int index) {
+        return index + 1 >= Board.WINNER_LEN;
     }
 
     private static boolean checkWinner(Set<Integer> boxes, int index, int interval) {

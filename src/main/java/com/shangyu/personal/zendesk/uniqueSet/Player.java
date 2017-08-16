@@ -1,4 +1,4 @@
-package com.shangyu.personal.zendesk;
+package com.shangyu.personal.zendesk.uniqueSet;
 
 import java.util.HashSet;
 import java.util.Set;
