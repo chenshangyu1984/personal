@@ -117,17 +117,20 @@ public class GameUtils {
             // print game
             printGame(board);
 
-            // determine winner if any
-            boolean win = determineWinner(board, boxIndex);
-            if (win) {
-                System.out.println("Congratulations " + player.getName() + "! You have won.");
-                return;
-            }
+            // check winner
+            if (board.getFilled() >= Board.WINNER_LEN * 2 - 1) {
+                // determine winner if any
+                boolean win = determineWinner(board, boxIndex);
+                if (win) {
+                    System.out.println("Congratulations " + player.getName() + "! You have won.");
+                    return;
+                }
 
-            // tie
-            if (board.isFull()) {
-                System.out.println("Game is tied.");
-                return;
+                // tie
+                if (board.getFilled() == board.getSize() * board.getSize()) {
+                    System.out.println("Game is tied.");
+                    return;
+                }
             }
 
             player = player.equals(player1) ? player2 : player1;

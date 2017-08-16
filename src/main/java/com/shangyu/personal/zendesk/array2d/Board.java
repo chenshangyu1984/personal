@@ -39,7 +39,7 @@ public class Board {
         return boxes[fristIndex][secondIndex];
     }
 
-    public boolean isFull() {
-        return filled == size * size;
+    public int getFilled() {
+        return filled;
     }
 }
