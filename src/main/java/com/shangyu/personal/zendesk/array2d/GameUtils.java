@@ -120,8 +120,7 @@ public class GameUtils {
             // check winner
             if (board.getFilled() >= Board.WINNER_LEN * 2 - 1) {
                 // determine winner if any
-                boolean win = determineWinner(board, boxIndex);
-                if (win) {
+                if (determineWinner(board, boxIndex)) {
                     System.out.println("Congratulations " + player.getName() + "! You have won.");
                     return;
                 }
