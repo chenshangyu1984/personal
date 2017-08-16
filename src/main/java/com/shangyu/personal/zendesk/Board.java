@@ -9,19 +9,13 @@ public class Board {
     public static final String MARKER_O = "O";
 
     private int size;
-    private String[] boxes;
 
     public Board(int size) {
         this.size = size;
-        boxes = new String[size * size];
     }
 
     public int getSize() {
         return size;
-    }
-
-    public String[] getBoxes() {
-        return boxes;
     }
 
     public boolean isValidIndex(int index) {

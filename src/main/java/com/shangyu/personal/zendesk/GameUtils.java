@@ -132,7 +132,7 @@ public class GameUtils {
             }
 
             // tie
-            if (player1.getBoxes().size() + player2.getBoxes().size() == board.getBoxes().length) {
+            if (player1.getBoxes().size() + player2.getBoxes().size() == board.getSize() * board.getSize()) {
                 System.out.println("Game is tied.");
                 return;
             }
