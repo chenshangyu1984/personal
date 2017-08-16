@@ -139,56 +139,56 @@ public class GameUtils {
 
     public static boolean determineWinner(Board board, int index) {
         String marker = board.getBox(index);
-        int firstIndex = index / board.getSize();
-        int secondIndex = index % board.getSize();
+        int rowIndex = index / board.getSize();
+        int columnIndex = index % board.getSize();
 
         // horizontally
-        // from current to left (secondIndex decreased by 1)
-        if (toLeftOrTop(secondIndex) &&
-                checkWinner(board, marker, firstIndex, 0, secondIndex, -1)) {
+        // from current to left (columnIndex decreased by 1)
+        if (toColumnLeftOrRowTop(columnIndex) &&
+                checkWinner(board, marker, rowIndex, 0, columnIndex, -1)) {
             return true;
         }
-        // from current to right (secondIndex increased by 1)
-        if (toRightOrBottom(board.getSize(), secondIndex) &&
-                checkWinner(board, marker, firstIndex, 0, secondIndex, 1)) {
+        // from current to right (columnIndex increased by 1)
+        if (toColumnRightOrRowBottom(board.getSize(), columnIndex) &&
+                checkWinner(board, marker, rowIndex, 0, columnIndex, 1)) {
             return true;
         }
 
         // vertically
-        // from current to bottom (firstIndex increased by 1)
-        if (toRightOrBottom(board.getSize(), firstIndex) &&
-                checkWinner(board, marker, firstIndex, 1, secondIndex, 0)) {
+        // from current to bottom (rowIndex increased by 1)
+        if (toColumnRightOrRowBottom(board.getSize(), rowIndex) &&
+                checkWinner(board, marker, rowIndex, 1, columnIndex, 0)) {
             return true;
         }
-        // from current to top (firstIndex decreased by 1)
-        if (toLeftOrTop(firstIndex) &&
-                checkWinner(board, marker, firstIndex, -1, secondIndex, 0)) {
+        // from current to top (rowIndex decreased by 1)
+        if (toColumnLeftOrRowTop(rowIndex) &&
+                checkWinner(board, marker, rowIndex, -1, columnIndex, 0)) {
             return true;
         }
 
         // diagonally
-        // from current to left bottom (firstIndex increased by 1, secondIndex decreased by 1)
-        if (toRightOrBottom(board.getSize(), firstIndex) &&
-                toLeftOrTop(secondIndex) &&
-                checkWinner(board, marker, firstIndex, 1, secondIndex, -1)) {
+        // from current to left bottom (rowIndex increased by 1, columnIndex decreased by 1)
+        if (toColumnRightOrRowBottom(board.getSize(), rowIndex) &&
+                toColumnLeftOrRowTop(columnIndex) &&
+                checkWinner(board, marker, rowIndex, 1, columnIndex, -1)) {
             return true;
         }
-        // from current to left top (firstIndex decreased by 1, secondIndex decreased by 1)
-        if (toLeftOrTop(firstIndex) &&
-                toLeftOrTop(secondIndex) &&
-                checkWinner(board, marker, firstIndex, -1, secondIndex, -1)) {
+        // from current to left top (rowIndex decreased by 1, columnIndex decreased by 1)
+        if (toColumnLeftOrRowTop(rowIndex) &&
+                toColumnLeftOrRowTop(columnIndex) &&
+                checkWinner(board, marker, rowIndex, -1, columnIndex, -1)) {
             return true;
         }
-        // from current to right bottom (firstIndex increased by 1, secondIndex increased by 1)
-        if (toRightOrBottom(board.getSize(), firstIndex) &&
-                toRightOrBottom(board.getSize(), secondIndex)  &&
-                checkWinner(board, marker, firstIndex, 1, secondIndex, 1)) {
+        // from current to right bottom (rowIndex increased by 1, columnIndex increased by 1)
+        if (toColumnRightOrRowBottom(board.getSize(), rowIndex) &&
+                toColumnRightOrRowBottom(board.getSize(), columnIndex)  &&
+                checkWinner(board, marker, rowIndex, 1, columnIndex, 1)) {
             return true;
         }
-        // from current to right top (firstIndex decreased by 1, secondIndex increased by 1)
-        if (toLeftOrTop(firstIndex)&&
-                toRightOrBottom(board.getSize(), secondIndex) &&
-                checkWinner(board, marker, firstIndex, -1, secondIndex, 1)) {
+        // from current to right top (rowIndex decreased by 1, columnIndex increased by 1)
+        if (toColumnLeftOrRowTop(rowIndex)&&
+                toColumnRightOrRowBottom(board.getSize(), columnIndex) &&
+                checkWinner(board, marker, rowIndex, -1, columnIndex, 1)) {
             return true;
         }
 
@@ -206,11 +206,11 @@ public class GameUtils {
         return true;
     }
 
-    private static boolean toRightOrBottom(int size, int index) {
+    private static boolean toColumnRightOrRowBottom(int size, int index) {
         return size - index >= Board.WINNER_LEN;
     }
 
-    private static boolean toLeftOrTop(int index) {
+    private static boolean toColumnLeftOrRowTop(int index) {
         return index + 1 >= Board.WINNER_LEN;
     }
 
