@@ -1,4 +1,4 @@
-package com.shangyu.personal.zendesk.array2d;
+package com.shangyu.personal.zendesk;
 
 import org.springframework.util.StringUtils;
 
@@ -8,6 +8,9 @@ import java.util.Scanner;
  * Created by shangyu on 16/8/17.
  */
 public class GameUtils {
+    public static final Integer WINNER_LEN = 3;
+    public static final String MARKER_X = "X";
+    public static final String MARKER_O = "O";
 
     public static int getSizeOfGame(Scanner scanner, String text) {
         int size = 0;
@@ -20,7 +23,7 @@ public class GameUtils {
                 continue;
             }
 
-            if (size < Board.WINNER_LEN) {
+            if (size < WINNER_LEN) {
                 continue;
             }
 
@@ -30,8 +33,7 @@ public class GameUtils {
         return size;
     }
 
-    public static String getNameOfPlayer(Scanner scanner, String
-            text) {
+    public static String getNameOfPlayer(Scanner scanner, String text) {
         String name = null;
         while (true) {
             System.out.print(text);
@@ -46,11 +48,12 @@ public class GameUtils {
         return name;
     }
 
-    private static int inputBoxIndex(Scanner scanner, Player player, Board board) {
+    public static int getBoxIndex(Scanner scanner, String text, Board board, Player player) {
         int boxIndex = 0;
+        String _text = String.format(text, player.getName(), player.getMarker());
 
         while (true) {
-            System.out.print(player.getName() + ", choose a box to place an '" + player.getMarker() + "' into: ");
+            System.out.print(_text);
 
             try {
                 String line = scanner.nextLine();
@@ -79,7 +82,7 @@ public class GameUtils {
         System.out.println();
         for (int i = 0; i < board.getSize(); i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                String text = board.getBox(i, j);
+                String text = board.getBox(i * board.getSize() + j);
                 if (text == null) {
                     text = "" + (i * board.getSize() + j + 1);
                 }
@@ -105,35 +108,60 @@ public class GameUtils {
         }
     }
 
-    public static void playGame(Scanner scanner, Board board, Player player1, Player player2) {
+    public static Result playGame(Scanner scanner, Board board) {
+        // name of player 1
+        String player1Name = GameUtils.getNameOfPlayer(scanner, "Enter name for Player 1: ");
+        Player player1 = new Player(player1Name, GameUtils.MARKER_X);
+
+        // name of player 2
+        String player2Name = GameUtils.getNameOfPlayer(scanner, "Enter name for Player 2: ");
+        Player player2 = new Player(player2Name, GameUtils.MARKER_O);
+
+        // print initial game
+        GameUtils.printGame(board);
+
+        // play game
+        String text = "%s, choose a box to place an '%s' into: ";
         Player player = player1;
         while (true) {
-            // get valid index (already minus 1)
-            int boxIndex = inputBoxIndex(scanner, player, board);
+            int index = GameUtils.getBoxIndex(scanner, text, board, player);
 
-            // set board's box
-            board.setBox(boxIndex, player.getMarker());
-
-            // print game
-            printGame(board);
-
-            // check winner
-            if (board.getFilled() >= Board.WINNER_LEN * 2 - 1) {
-                // determine winner if any
-                if (determineWinner(board, boxIndex)) {
-                    System.out.println("Congratulations " + player.getName() + "! You have won.");
-                    return;
-                }
-
-                // tie
-                if (board.getFilled() == board.getSize() * board.getSize()) {
+            Result result = GameUtils.playGame(board, player, index);
+            if (result != null) {
+                if (result.getWinner() != null) {
+                    System.out.println("Congratulations " + result.getWinner().getName() + "! You have won.");
+                } else {
                     System.out.println("Game is tied.");
-                    return;
                 }
+
+                return result;
             }
 
-            player = player.equals(player1) ? player2 : player1;
+            player = player == player1 ? player2 : player1;
         }
+    }
+
+    public static Result playGame(Board board, Player player, int boxIndex) {
+        // set board's box
+        board.setBox(boxIndex, player.getMarker());
+
+        // print game
+        printGame(board);
+
+        // check winner
+        if (board.getFilled() >= WINNER_LEN * 2 - 1) {
+            // determine winner if any
+            if (determineWinner(board, boxIndex)) {
+                return new Result(player);
+            }
+
+            // tie
+            if (board.getFilled() == board.getSize() * board.getSize()) {
+                return new Result();
+            }
+        }
+
+        return null;
     }
 
     public static boolean determineWinner(Board board, int index) {
@@ -194,23 +222,24 @@ public class GameUtils {
         return false;
     }
 
-    private static boolean checkWinner(Board board, String marker, int firstIndex, int firstInterval, int 
+    private static boolean checkWinner(Board board, String marker, int firstIndex, int firstInterval, int
             secondIndex, int secondInterval) {
-        for (int i = 1 ; i < Board.WINNER_LEN; i++) {
-            if (!marker.equals(board.getBox(firstIndex + firstInterval * i, secondIndex + secondInterval * i))) {
+        for (int i = 1 ; i < WINNER_LEN; i++) {
+            if (!marker.equals(board.getBox((firstIndex + firstInterval * i) * board.getSize() +
+                    secondIndex + secondInterval * i))) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
     private static boolean toColumnRightOrRowBottom(int size, int index) {
-        return size - index >= Board.WINNER_LEN;
+        return size - index >= WINNER_LEN;
     }
 
     private static boolean toColumnLeftOrRowTop(int index) {
-        return index + 1 >= Board.WINNER_LEN;
+        return index + 1 >= WINNER_LEN;
     }
 
     private static String padding(String text) {

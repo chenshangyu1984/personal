@@ -1,4 +1,4 @@
-package com.shangyu.personal.zendesk.array2d;
+package com.shangyu.personal.zendesk;
 
 /**
  * Created by shangyu on 16/8/17.
