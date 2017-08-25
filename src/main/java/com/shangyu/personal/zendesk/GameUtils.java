@@ -86,7 +86,7 @@ public class GameUtils {
                 if (text == null) {
                     text = "" + (i * board.getSize() + j + 1);
                 }
-                System.out.print(padding(text));
+                System.out.print(padding(text, board.getSize()));
 
                 if (j < board.getSize() - 1) {
                     System.out.print("|");
@@ -97,7 +97,9 @@ public class GameUtils {
             // print dashed line
             if (i < board.getSize() - 1) {
                 for (int j = 0; j < board.getSize(); j++) {
-                    System.out.print("---");
+                    for (int k = 0; k < board.getSize(); k++) {
+                        System.out.print("-");
+                    }
 
                     if (j < board.getSize() - 1) {
                         System.out.print("-");
@@ -225,8 +227,7 @@ public class GameUtils {
     private static boolean checkWinner(Board board, String marker, int firstIndex, int firstInterval, int
             secondIndex, int secondInterval) {
         for (int i = 1 ; i < WINNER_LEN; i++) {
-            if (!marker.equals(board.getBox((firstIndex + firstInterval * i) * board.getSize() +
-                    secondIndex + secondInterval * i))) {
+            if (!marker.equals(board.getBox(firstIndex + firstInterval * i, secondIndex + secondInterval * i))) {
                 return false;
             }
         }
@@ -242,13 +243,25 @@ public class GameUtils {
         return index + 1 >= WINNER_LEN;
     }
 
-    private static String padding(String text) {
-        if (text.length() == 1) {
-            return " " + text + " ";
-        }
+    private static String padding(String text, int length) {
+        int diff = length - text.length();
 
-        if (text.length() == 2) {
+        if (diff == 1) {
             return text + " ";
+        } else if (diff >= 2) {
+            int left = diff / 2;
+            StringBuilder result = new StringBuilder();
+            while (left > 0) {
+                result.append(" ");
+                left--;
+            }
+            result.append(text);
+            int right = diff - diff / 2;
+            while (right > 0) {
+                result.append(" ");
+                right--;
+            }
+            return result.toString();
         }
 
         return text;

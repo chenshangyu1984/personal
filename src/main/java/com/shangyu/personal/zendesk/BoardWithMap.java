@@ -26,8 +26,13 @@ public class BoardWithMap extends Board {
     }
 
     @Override
+    public String getBox(int rowIndex, int columnIndex) {
+        return getBox(rowIndex * getSize() + columnIndex);
+    }
+
+    @Override
     public boolean isValidIndex(int index) {
-        if (!isIndexInRange(index)) {
+        if (!super.isValidIndex(index)) {
             return false;
         }
 

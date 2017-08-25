@@ -27,10 +27,9 @@ public abstract class Board {
 
     public abstract String getBox(int index);
 
-    public abstract boolean isValidIndex(int index);
+    public abstract String getBox(int rowIndex, int columnIndex);
 
-    /** index starts from 0 **/
-    protected boolean isIndexInRange(int index) {
+    public boolean isValidIndex(int index) {
         return index >= 0 && index < size * size;
     }
 }

@@ -54,7 +54,7 @@ public class GameUtilsTest {
 
         // from last to Left Bottom
         board = init(3);
-        setBox(board, 6, 2, 2);
+        setBox(board, 6, 4, 2);
         Assert.assertTrue("test diagonally from last to left bottom fail", GameUtils.determineWinner(board, 2));
 
         // from last to Right Top

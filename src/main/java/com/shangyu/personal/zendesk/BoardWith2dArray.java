@@ -19,12 +19,17 @@ public class BoardWith2dArray extends Board {
 
     @Override
     public String getBox(int index) {
-        return boxes[index / getSize()][index % getSize()];
+        return getBox(index / getSize(), index % getSize());
+    }
+
+    @Override
+    public String getBox(int rowIndex, int columnIndex) {
+        return boxes[rowIndex][columnIndex];
     }
 
     @Override
     public boolean isValidIndex(int index) {
-        if (!isIndexInRange(index)) {
+        if (!super.isValidIndex(index)) {
             return false;
         }
 
